@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px 
 
+# cmd - python3 -m streamlit run app.py
+
 # Brand palette (Orange-inspired)
 ORANGE = "#FF7900"
 BLACK = "#000000"
@@ -49,28 +51,35 @@ hr { margin-top: 2rem !important; margin-bottom: 2rem !important; }
             
 /* KPI card styling */
 [data-testid="stMetric"] {
-    background-color: #F8F9FA;
-    border: 1px solid #E9ECEF;
-    border-left: 4px solid #FF7900;
-    border-radius: 4px;
-    padding: 16px 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-    height: 140px;            /* fixed height for all cards */
+    background-color: #FFFFFF;
+    border: 1.5px solid #FF7900;
+    border-radius: 6px;
+    padding: 18px 22px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    height: 140px;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start;  /* align content to the top */
+    justify-content: flex-start;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+[data-testid="stMetric"]:hover {
+    box-shadow: 0 4px 14px rgba(255, 121, 0, 0.18);
+    transform: translateY(-2px);
 }
 
 [data-testid="stMetricLabel"] {
     font-weight: 600 !important;
     color: #595959 !important;
     font-size: 0.85rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 [data-testid="stMetricValue"] {
-    font-weight: 700 !important;
-    color: #000000 !important;
-    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    color: #0F0F0F !important;
+    font-size: 1.75rem !important;
 }
 
 [data-testid="stMetricDelta"] {
@@ -80,9 +89,29 @@ hr { margin-top: 2rem !important; margin-bottom: 2rem !important; }
 """, unsafe_allow_html=True)
 
 
-st.title("Orange Recharging Operations Dashboard")
-st.caption("Prototype dashboard proposal • Sample data, 2023–2024 • Aryansh Jain")
-st.markdown("---")
+st.markdown("""
+<div style="
+    background-color: #0F0F0F;
+    padding: 60px 48px 60px 48px;
+    margin: -6rem -5rem 2.5rem -5rem;
+    display: flex;
+    align-items: center;
+    min-height: 140px;
+">
+    <h1 style="
+        color: #FFFFFF;
+        margin: 0;
+        padding: 0;
+        font-weight: 800;
+        font-size: 2.5rem;
+        letter-spacing: -0.5px;
+        text-align: left;
+    ">
+        Orange Recharging Operations Dashboard
+    </h1>
+</div>
+""", unsafe_allow_html=True)
+
 
 df = pd.read_excel("Sample_dashboard_data.xlsx")
 
@@ -145,60 +174,17 @@ st.sidebar.caption(f"Showing **{len(df)}** of 100 rows")
 st.sidebar.markdown("---")
 st.sidebar.subheader("Sections to display")
 
-show_quality = st.sidebar.checkbox("Data quality review", value=True)
 show_kpis = st.sidebar.checkbox("KPI cards", value=True)
 show_regional = st.sidebar.checkbox("Regional performance", value=True)
-show_accountability = st.sidebar.checkbox("Accountability and trend", value=True)
+show_breakdowns = st.sidebar.checkbox("Performance breakdowns", value=True)
+show_portfolio = st.sidebar.checkbox("Service Portfolio", value=True)
 show_findings = st.sidebar.checkbox("Key findings", value=True)
-show_portfolio = st.sidebar.checkbox("Service Portfolio chart", value=True)
-
-# Data quality review — six checks every dataset deserves
-if show_quality:
-    with st.expander("Data quality review (click to expand)"):
-        
-        # (1) Shape — how big is the table?
-        st.markdown("**1. Shape**")
-        st.write(f"Rows: {len(df)}  |  Columns: {len(df.columns)}")
-
-        # (2) Column types — is every column the kind of thing it should be?
-        st.markdown("**2. Column types AFTER cleaning (Year & Progress Rate)**")
-        st.write(df.dtypes.astype(str))
-
-        # (3) Missing values — any blank cells?
-        st.markdown("**3. Missing values per column**")
-        st.write(df.isnull().sum())
-
-        # (4) Duplicates — fully identical rows, and business-key duplicates
-        st.markdown("**4. Duplicates**")
-        full_dupes = df.duplicated().sum()
-        key_cols = ["Year", "Service", "Sub-Region Name",
-                    "Business Unit Name", "Service Portfolio", "Service Allocation"]
-        key_dupes = df.duplicated(subset=key_cols).sum()
-        st.write(f"Fully identical rows: {full_dupes}")
-        st.write(f"Rows sharing the same category combination: {key_dupes}")
-
-        # (5) Distinct values in each category column
-        st.markdown("**5. Distinct values in each category**")
-        category_cols = ["Year", "Service", "Region", "Sub-Region Name",
-                        "Business Unit Name", "Service Portfolio",
-                        "Service Allocation", "Recharging Roadmap"]
-        for col in category_cols:
-            values = sorted(df[col].astype(str).unique().tolist())
-            st.write(f"**{col}** ({len(values)} unique): {values}")
-
-        # (6) Summary statistics for the numeric columns
-        st.markdown("**6. Summary statistics (numbers only)**")
-        st.dataframe(df.describe().round(1))
-
-        # Cleaned data table
-        st.subheader("Cleaned data")
-        st.dataframe(df)
+show_quality = st.sidebar.checkbox("Data quality review", value=True)
 
 
-# STEP 3 — KPIs
-    # ============================================================
+
+# KPIs
 if show_kpis:
-    st.markdown("---")
     st.subheader("Key Performance Indicators")
     st.caption("Headline operational metrics across the filtered view.")
 
@@ -350,7 +336,7 @@ if show_regional:
 
 
 # CHARTS Performance breakdowns
-if show_accountability:
+if show_breakdowns:
     st.markdown("---")
     st.subheader("Performance breakdowns")
     st.caption("Performance by Business Unit and year-over-year change by Service.")
@@ -472,3 +458,45 @@ if show_findings:
             - **Service Portfolio results** need context. Knowing which portfolio performs well requires understanding what each represents.
             """
         )
+
+# Data quality review — six checks every dataset deserves
+if show_quality:
+    with st.expander("Data quality review (click to expand)"):
+        
+        # (1) Shape — how big is the table?
+        st.markdown("**1. Shape**")
+        st.write(f"Rows: {len(df)}  |  Columns: {len(df.columns)}")
+
+        # (2) Column types — is every column the kind of thing it should be?
+        st.markdown("**2. Column types AFTER cleaning (Year & Progress Rate)**")
+        st.write(df.dtypes.astype(str))
+
+        # (3) Missing values — any blank cells?
+        st.markdown("**3. Missing values per column**")
+        st.write(df.isnull().sum())
+
+        # (4) Duplicates — fully identical rows, and business-key duplicates
+        st.markdown("**4. Duplicates**")
+        full_dupes = df.duplicated().sum()
+        key_cols = ["Year", "Service", "Sub-Region Name",
+                    "Business Unit Name", "Service Portfolio", "Service Allocation"]
+        key_dupes = df.duplicated(subset=key_cols).sum()
+        st.write(f"Fully identical rows: {full_dupes}")
+        st.write(f"Rows sharing the same category combination: {key_dupes}")
+
+        # (5) Distinct values in each category column
+        st.markdown("**5. Distinct values in each category**")
+        category_cols = ["Year", "Service", "Region", "Sub-Region Name",
+                        "Business Unit Name", "Service Portfolio",
+                        "Service Allocation", "Recharging Roadmap"]
+        for col in category_cols:
+            values = sorted(df[col].astype(str).unique().tolist())
+            st.write(f"**{col}** ({len(values)} unique): {values}")
+
+        # (6) Summary statistics for the numeric columns
+        st.markdown("**6. Summary statistics (numbers only)**")
+        st.dataframe(df.describe().round(1))
+
+        # Cleaned data table
+        st.subheader("Cleaned data")
+        st.dataframe(df)
