@@ -245,7 +245,7 @@ if show_kpis:
         label="YoY Recharging",
         value=yoy_display,
         delta=yoy_delta,
-        help="Change in delivered recharging from 2023 to 2024. Requires both years in view."
+        help="Change in delivered recharging from 2023 to 2024."
     )
 
 # CHARTS REGIONAL PERFORMANCE
