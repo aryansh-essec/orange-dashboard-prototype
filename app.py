@@ -107,7 +107,7 @@ st.markdown("""
         letter-spacing: -0.5px;
         text-align: left;
     ">
-        Orange Recharging Operations Dashboard
+        Recharging Operations Dashboard
     </h1>
 </div>
 """, unsafe_allow_html=True)
