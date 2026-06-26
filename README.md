@@ -1,6 +1,6 @@
-# orange-dashboard-prototype
+# dashboard-prototype
 
-A prototype dashboard built for an interview discussion with Orange.
+A prototype dashboard built on a sample excel data.
 
 **Live demo:** https://orange-dashboard-prototype-6qfapphmulim79nxmih3rgg.streamlit.app/
 
